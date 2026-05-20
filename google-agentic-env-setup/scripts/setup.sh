@@ -32,7 +32,7 @@
 #                         Verify released hashes at:
 #                         https://github.com/astral-sh/uv/releases
 #   AGENT_SETUP_LOG     — override the log file path (default: timestamped file
-#                         under ~/.agent-skills/logs/).
+#                         under ~/.agent/skills/logs/).
 #   AGENT_SKILLS_DIR    — override the Agent Skills scaffold location.
 # =============================================================================
 
@@ -43,9 +43,9 @@ set -uo pipefail
 # -----------------------------------------------------------------------------
 # Audit log — every line of output is tee'd to a timestamped file so
 # enterprise teams have a durable record of what the script did.
-# The log directory is created under ~/.agent-skills/logs/ by default.
+# The log directory is created under ~/.agent/skills/logs/ by default.
 # -----------------------------------------------------------------------------
-LOG_FILE="${AGENT_SETUP_LOG:-$HOME/.agent-skills/logs/setup-$(date +%Y%m%d-%H%M%S).log}"
+LOG_FILE="${AGENT_SETUP_LOG:-$HOME/.agent/skills/logs/setup-$(date +%Y%m%d-%H%M%S).log}"
 mkdir -p "$(dirname "$LOG_FILE")"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
@@ -99,7 +99,7 @@ echo "  2. uv                           (Astral Python & tool manager, ~/.local/
 echo "  3. Python 3.12                  (managed by uv, isolated from system Python)"
 echo "  4. google-adk + adk CLI         (uv tool; 'adk' on PATH)"
 echo "  5. google-agents-cli + CLI      (uv tool; 'agents-cli' on PATH)"
-echo "  6. ~/.agent-skills              (Agent Skills scaffold directory + README)"
+echo "  6. ~/.agent/skills              (Agent Skills scaffold directory + README)"
 echo ""
 echo "This script will NOT:"
 echo "  - run gcloud auth login, create projects, link billing, or create keys"
@@ -348,7 +348,7 @@ echo ""
 #   install into the coding agent.)
 # -----------------------------------------------------------------------------
 info "Step 6/6: Checking the Agent Skills scaffold..."
-SKILLS_DIR="${AGENT_SKILLS_DIR:-$HOME/.agent-skills}"
+SKILLS_DIR="${AGENT_SKILLS_DIR:-$HOME/.agent/skills}"
 if [ -d "$SKILLS_DIR" ]; then
   ok "Agent Skills directory already exists ($SKILLS_DIR) — no change"
   COMPLETED_STEPS+=("Agent Skills scaffold: SKIPPED (already exists at $SKILLS_DIR)")

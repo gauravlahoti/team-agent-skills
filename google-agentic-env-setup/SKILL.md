@@ -25,11 +25,11 @@ skip it, and do not start running tools until the user has acknowledged.
 >
 > **What I'll do, in order:**
 > 1. **Inspect** your machine (read-only): detect git, uv, Python, `adk`,
->    `agents-cli`, `gcloud`, and the `~/.agent-skills` scaffold.
+>    `agents-cli`, `gcloud`, and the `~/.agent/skills` scaffold.
 > 2. **Install only what's missing**, via the platform setup script:
 >    git, uv, Python 3.12 (uv-managed, system Python untouched; ADK minimum 3.10),
 >    `google-adk` (`adk` CLI on PATH), `google-agents-cli` (`agents-cli` CLI on
->    PATH), and the `~/.agent-skills` scaffold directory.
+>    PATH), and the `~/.agent/skills` scaffold directory.
 > 3. **Guided Google Cloud setup (gated — needs you)**: `gcloud auth login`,
 >    Terms of Service, project + billing, and Gemini API key written to a
 >    gitignored `.env`. I will pause for explicit approval at each of these
@@ -106,7 +106,7 @@ change (without ever echoing the API key value).
 | Python (via uv)   | Managed interpreter, 3.10+ minimum, 3.12 recommended   |
 | google-adk        | The ADK library **and** the `adk` CLI                  |
 | google-agents-cli | The `agents-cli` command (scaffold, deploy, publish)   |
-| Agent Skills dir  | `~/.agent-skills` scaffold for custom skill authoring  |
+| Agent Skills dir  | `~/.agent/skills` scaffold for custom skill authoring  |
 | gcloud            | Google Cloud CLI for auth, projects, billing           |
 | GCP project + key | Gemini API access (guided, with human gates)           |
 

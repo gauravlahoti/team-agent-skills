@@ -50,7 +50,7 @@ it, and then report what changed (e.g. *"Installed uv 0.4.x into
    agents-cli setup
    ```
    This command is interactive — do NOT auto-run it. Suggest it to the user.
-6. **Agent Skills scaffold** — `~/.agent-skills` with a README explaining the
+6. **Agent Skills scaffold** — `~/.agent/skills` with a README explaining the
    one-folder-per-skill, SKILL.md-with-frontmatter convention. This is for the
    user's OWN custom skills and is independent of the bundled skills installed
    by `agents-cli setup`.

@@ -61,7 +61,7 @@ function Assert-ExitCode($description) {
 # timestamped file. This gives enterprise teams a complete audit trail.
 # -----------------------------------------------------------------------------
 $logDir  = if ($env:AGENT_SETUP_LOG) { Split-Path $env:AGENT_SETUP_LOG } `
-           else { Join-Path $env:USERPROFILE ".agent-skills\logs" }
+           else { Join-Path $env:USERPROFILE ".agent\skills\logs" }
 $logFile = if ($env:AGENT_SETUP_LOG) { $env:AGENT_SETUP_LOG } `
            else { Join-Path $logDir ("setup-" + (Get-Date -Format "yyyyMMdd-HHmmss") + ".log") }
 New-Item -ItemType Directory -Path $logDir -Force -ErrorAction SilentlyContinue | Out-Null
@@ -94,7 +94,7 @@ Write-Host "  2. uv                             (Astral Python & tool manager, %
 Write-Host "  3. Python 3.12                    (managed by uv, isolated from system Python)"
 Write-Host "  4. google-adk + adk CLI           (uv tool; 'adk.exe' on PATH)"
 Write-Host "  5. google-agents-cli + CLI        (uv tool; 'agents-cli.exe' on PATH)"
-Write-Host "  6. %USERPROFILE%\.agent-skills    (Agent Skills scaffold directory + README)"
+Write-Host "  6. %USERPROFILE%\.agent\skills    (Agent Skills scaffold directory + README)"
 Write-Host ""
 Write-Host "This script will NOT:"
 Write-Host "  - run gcloud auth login, create projects, link billing, or create keys"
@@ -341,7 +341,7 @@ Write-Host ""
 #   custom skills.
 # -----------------------------------------------------------------------------
 Info "Step 6/6: Checking the Agent Skills scaffold..."
-$skillsDir = if ($env:AGENT_SKILLS_DIR) { $env:AGENT_SKILLS_DIR } else { Join-Path $env:USERPROFILE ".agent-skills" }
+$skillsDir = if ($env:AGENT_SKILLS_DIR) { $env:AGENT_SKILLS_DIR } else { Join-Path $env:USERPROFILE ".agent\skills" }
 if (Test-Path $skillsDir) {
     Ok "Agent Skills directory already exists ($skillsDir) — no change"
     $completedSteps.Add("Agent Skills scaffold: SKIPPED (already exists at $skillsDir)")

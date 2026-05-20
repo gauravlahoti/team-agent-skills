@@ -23,7 +23,7 @@
 - macOS git install now exits cleanly instead of silently falling through.
 - PowerShell `setup.ps1` now checks `$LASTEXITCODE` after every native
   executable call (winget, uv, etc.) — fixes silent false-success bug.
-- Full audit log added: `setup.sh` tees to `~/.agent-skills/logs/`; `setup.ps1`
+- Full audit log added: `setup.sh` tees to `~/.agent/skills/logs/`; `setup.ps1`
   uses `Start-Transcript`.
 - Verify step corrected: `adk run --help` replaces broken
   `uv run python -c "import google.adk"` (adk is a uv tool, not in project venv).

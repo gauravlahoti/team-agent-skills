@@ -42,7 +42,7 @@ it, and then report what changed (e.g. *"Installed uv into
    agents-cli setup
    ```
    Registers Google's bundled ADK skills with the user's coding agent.
-6. **Agent Skills scaffold** — `%USERPROFILE%\.agent-skills`. This is for the
+6. **Agent Skills scaffold** — `%USERPROFILE%.agentskills`. This is for the
    user's OWN custom skills and is independent of the bundled skills installed
    by `agents-cli setup`.
 7. **gcloud** — see `gcp-setup.md`. **On Windows, deployment/automation contexts

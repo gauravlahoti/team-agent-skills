@@ -87,7 +87,7 @@ Write-Host "---------------------------------------------"
 # Agent Skills scaffold check. Resolves the directory the same way setup.ps1
 # does so the two scripts agree on location.
 # -----------------------------------------------------------------------------
-$skillsDir = if ($env:AGENT_SKILLS_DIR) { $env:AGENT_SKILLS_DIR } else { Join-Path $env:USERPROFILE ".agent-skills" }
+$skillsDir = if ($env:AGENT_SKILLS_DIR) { $env:AGENT_SKILLS_DIR } else { Join-Path $env:USERPROFILE ".agent\skills" }
 if (Test-Path $skillsDir) {
     Write-Host ("  [OK] {0,-12} {1}" -f "skills dir", $skillsDir) -ForegroundColor Green
     $present.Add("skills dir ($skillsDir)") | Out-Null

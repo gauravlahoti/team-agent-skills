@@ -10,15 +10,15 @@ Ready-to-use skills for your coding agent. Clone once, stay updated with `git pu
 ## Install
 
 ```bash
-git clone https://github.com/gauravlahoti/team-agent-skills.git ~/.agent-skills
+git clone https://github.com/gauravlahoti/team-agent-skills.git ~/.agent/skills
 ```
 
 That's it. Your coding agent picks up the skills automatically on next launch.
 
-> Already have your own skills in `~/.agent-skills`? Add just this skill instead:
+> Already have your own skills in `~/.agent/skills`? Add just this skill instead:
 > ```bash
 > git clone https://github.com/gauravlahoti/team-agent-skills.git ~/team-agent-skills
-> ln -s ~/team-agent-skills/google-agentic-env-setup ~/.agent-skills/google-agentic-env-setup
+> ln -s ~/team-agent-skills/google-agentic-env-setup ~/.agent/skills/google-agentic-env-setup
 > ```
 
 ---
@@ -37,7 +37,7 @@ Claude Code will find the `google-agentic-env-setup` skill and walk you through 
 ```
 > Set up my Google ADK development environment
 ```
-The skill loads automatically from `~/.agent-skills`. Same prompt, same guided flow.
+The skill loads automatically from `~/.agent/skills`. Same prompt, same guided flow.
 
 > **How it works:** Skills are instruction files your coding agent reads before responding.
 > The agent uses the skill to know exactly what to install, what to ask you, and what
@@ -48,7 +48,7 @@ The skill loads automatically from `~/.agent-skills`. Same prompt, same guided f
 ## Stay updated
 
 ```bash
-cd ~/.agent-skills && git pull
+cd ~/.agent/skills && git pull
 ```
 
 ---

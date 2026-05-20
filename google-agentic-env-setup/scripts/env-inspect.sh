@@ -89,7 +89,7 @@ echo "---------------------------------------------"
 # Agent Skills scaffold check. Resolves the directory the same way setup.sh
 # does so the two scripts agree on location.
 # -----------------------------------------------------------------------------
-SKILLS_DIR="${AGENT_SKILLS_DIR:-$HOME/.agent-skills}"
+SKILLS_DIR="${AGENT_SKILLS_DIR:-$HOME/.agent/skills}"
 if [ -d "$SKILLS_DIR" ]; then
   printf '  [%s] %-12s %s\n' "$(green OK)" "skills dir" "$(dim "$SKILLS_DIR")"
   PRESENT+=("skills dir ($SKILLS_DIR)")
