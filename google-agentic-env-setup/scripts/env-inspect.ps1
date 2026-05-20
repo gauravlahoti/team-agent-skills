@@ -114,6 +114,44 @@ if (Get-Command gcloud -ErrorAction SilentlyContinue) {
 }
 
 # -----------------------------------------------------------------------------
+# Required Google Cloud API check.
+# Only runs when gcloud is present, an account is authenticated, and a project
+# is set. Reports ENABLED / MISSING for each API required by ADK.
+# -----------------------------------------------------------------------------
+$requiredApis = @(
+    "generativelanguage.googleapis.com",   # Gemini Developer API  (API-key path)
+    "cloudresourcemanager.googleapis.com", # Project/IAM management (needed by ADK deploy)
+    "serviceusage.googleapis.com",         # Enables/queries other APIs
+    "aiplatform.googleapis.com"            # Vertex AI  (ADC/service-account path)
+)
+
+$apiMissing = [System.Collections.Generic.List[string]]::new()
+$apiEnabled = [System.Collections.Generic.List[string]]::new()
+
+$canCheckApis = (Get-Command gcloud -ErrorAction SilentlyContinue) -and
+                $gcloudAccount -and $gcloudAccount -ne "(unset)" -and
+                $gcloudProject -and $gcloudProject -ne "(unset)"
+
+Write-Host "---------------------------------------------"
+if ($canCheckApis) {
+    Write-Host ("  Checking required Google Cloud APIs for project: {0}" -f $gcloudProject) -ForegroundColor DarkGray
+    foreach ($api in $requiredApis) {
+        $status = (gcloud services list --enabled --filter="name:$api" `
+                   --format="value(name)" --project="$gcloudProject" 2>$null)
+        if ($status) {
+            Write-Host ("  [OK] {0,-12} {1}" -f "API", $api) -ForegroundColor Green
+            $apiEnabled.Add($api) | Out-Null
+        } else {
+            Write-Host ("  [--] {0,-12} {1}  <- NOT ENABLED" -f "API", $api) -ForegroundColor Red
+            $apiMissing.Add($api) | Out-Null
+        }
+    }
+} else {
+    Write-Host "  [--] APIs         skipped — gcloud not authenticated or no project set" -ForegroundColor DarkGray
+}
+Write-Host "---------------------------------------------"
+
+# -----------------------------------------------------------------------------
 # SUMMARY block — gives the user a single place to see overall state and
 # clearly indicates that nothing on disk was changed.
 # -----------------------------------------------------------------------------
@@ -141,9 +179,26 @@ if (($gcloudAccount -and $gcloudAccount -ne "(unset)") -or ($gcloudProject -and 
     if ($gcloudProject -and $gcloudProject -ne "(unset)") { Write-Host "  - project: $gcloudProject" }
     Write-Host ""
 }
+if ($canCheckApis) {
+    Write-Host ("Google Cloud APIs ({0} enabled, {1} missing):" -f $apiEnabled.Count, $apiMissing.Count)
+    if ($apiMissing.Count -gt 0) {
+        foreach ($api in $apiMissing) { Write-Host "  - MISSING: $api" -ForegroundColor Red }
+        Write-Host ""
+        Write-Host "  To enable missing APIs run:" -ForegroundColor Yellow
+        foreach ($api in $apiMissing) {
+            Write-Host "    gcloud services enable $api --project=$gcloudProject" -ForegroundColor Yellow
+        }
+    } else {
+        Write-Host "  All required APIs are enabled." -ForegroundColor Green
+    }
+    Write-Host ""
+}
 Write-Host "Changes made to your system by this script: NONE (read-only)."
 if ($missing.Count -gt 0) {
     Write-Host "Next step: run scripts/setup.ps1 to install the MISSING components."
+}
+if ($canCheckApis -and $apiMissing.Count -gt 0) {
+    Write-Host "Next step: enable the MISSING APIs listed above (see references/gcp-setup.md Gate 3)."
 }
 Write-Host "============================================="
 Write-Host ""

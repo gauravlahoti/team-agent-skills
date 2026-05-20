@@ -114,6 +114,54 @@ if command -v gcloud >/dev/null 2>&1; then
 fi
 
 # -----------------------------------------------------------------------------
+# Required Google Cloud API check.
+# Only runs when gcloud is present, an account is authenticated, and a project
+# is set — all three are needed for `gcloud services list` to succeed.
+# Reports ENABLED / MISSING for each API required by ADK.
+# -----------------------------------------------------------------------------
+# APIs required for the Gemini Developer (API key) path:
+REQUIRED_APIS=(
+  "generativelanguage.googleapis.com"   # Gemini Developer API  (API-key path)
+  "cloudresourcemanager.googleapis.com" # Project/IAM management (needed by ADK deploy)
+  "serviceusage.googleapis.com"         # Enables/queries other APIs
+)
+# Additional APIs required for the Vertex AI (ADC) path:
+VERTEX_APIS=(
+  "aiplatform.googleapis.com"           # Vertex AI  (ADC/service-account path)
+)
+
+API_MISSING=()
+API_ENABLED=()
+
+_can_check_apis=false
+if command -v gcloud >/dev/null 2>&1 \
+   && [ -n "$GCLOUD_ACCOUNT" ] && [ "$GCLOUD_ACCOUNT" != "(unset)" ] \
+   && [ -n "$GCLOUD_PROJECT" ] && [ "$GCLOUD_PROJECT" != "(unset)" ]; then
+  _can_check_apis=true
+fi
+
+echo "---------------------------------------------"
+if $_can_check_apis; then
+  printf '  %s\n' "$(dim "Checking required Google Cloud APIs for project: $GCLOUD_PROJECT")"
+  _ALL_APIS=("${REQUIRED_APIS[@]}" "${VERTEX_APIS[@]}")
+  for api in "${_ALL_APIS[@]}"; do
+    _status="$(gcloud services list --enabled --filter="name:$api" \
+                --format="value(name)" --project="$GCLOUD_PROJECT" 2>/dev/null)"
+    if [ -n "$_status" ]; then
+      printf '  [%s] %-12s %s\n' "$(green OK)" "API" "$(dim "$api")"
+      API_ENABLED+=("$api")
+    else
+      printf '  [%s] %-12s %s\n' "$(red '--')" "API" "$(dim "$api  ← NOT ENABLED")"
+      API_MISSING+=("$api")
+    fi
+  done
+else
+  printf '  [%s] %-12s %s\n' "$(dim '--')" "APIs" \
+    "$(dim 'skipped — gcloud not authenticated or no project set')"
+fi
+echo "---------------------------------------------"
+
+# -----------------------------------------------------------------------------
 # SUMMARY block — gives the user a single place to see overall state and
 # clearly indicates that nothing on disk was changed.
 # -----------------------------------------------------------------------------
@@ -141,9 +189,28 @@ if [ -n "$GCLOUD_ACCOUNT$GCLOUD_PROJECT" ]; then
   [ -n "$GCLOUD_PROJECT" ] && [ "$GCLOUD_PROJECT" != "(unset)" ] && echo "  - project: $GCLOUD_PROJECT"
   echo ""
 fi
+if $_can_check_apis; then
+  echo "Google Cloud APIs (${#API_ENABLED[@]} enabled, ${#API_MISSING[@]} missing):"
+  if [ "${#API_MISSING[@]}" -gt 0 ]; then
+    for api in "${API_MISSING[@]}"; do
+      echo "  - MISSING: $api"
+    done
+    echo ""
+    echo "  To enable missing APIs run:"
+    for api in "${API_MISSING[@]}"; do
+      echo "    gcloud services enable $api --project=$GCLOUD_PROJECT"
+    done
+  else
+    echo "  All required APIs are enabled."
+  fi
+  echo ""
+fi
 echo "Changes made to your system by this script: NONE (read-only)."
 if [ "${#MISSING[@]}" -gt 0 ]; then
   echo "Next step: run scripts/setup.sh to install the MISSING components."
+fi
+if [ "${#API_MISSING[@]}" -gt 0 ]; then
+  echo "Next step: enable the MISSING APIs listed above (see references/gcp-setup.md Gate 3)."
 fi
 echo "============================================="
 echo ""

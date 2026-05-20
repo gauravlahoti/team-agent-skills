@@ -133,14 +133,46 @@ gcloud billing accounts list
 gcloud billing projects link YOUR_PROJECT_ID --billing-account=XXXXXX-XXXXXX-XXXXXX
 ```
 
-Then enable the API the agent will call. For Gemini via the Generative Language
-API:
+### Enable required APIs
+
+ADK needs several APIs to function. Enable them all now — `gcloud services enable`
+is idempotent, so re-running on an already-enabled API is safe.
+
 ```bash
-gcloud services enable generativelanguage.googleapis.com
+# Core APIs required for all ADK usage
+gcloud services enable \
+  generativelanguage.googleapis.com \
+  cloudresourcemanager.googleapis.com \
+  serviceusage.googleapis.com
+
+# Vertex AI — required if using the ADC/service-account path (recommended for production)
+gcloud services enable aiplatform.googleapis.com
 ```
-If the user is going the Vertex AI route instead of an API key, enable
-`aiplatform.googleapis.com` and skip the API-key gate — Vertex uses ADC from
-GATE 1, which is the **more secure path for production**.
+
+> **Why these APIs?**
+>
+> | API | Required for |
+> |-----|-------------|
+> | `generativelanguage.googleapis.com` | Gemini Developer API (API-key path) |
+> | `cloudresourcemanager.googleapis.com` | Project management; needed by ADK deploy commands |
+> | `serviceusage.googleapis.com` | Querying and enabling other APIs |
+> | `aiplatform.googleapis.com` | Vertex AI (ADC path — more secure than API keys) |
+
+After enabling, verify all four are active:
+```bash
+gcloud services list --enabled \
+  --filter="name:(generativelanguage.googleapis.com OR cloudresourcemanager.googleapis.com OR serviceusage.googleapis.com OR aiplatform.googleapis.com)" \
+  --format="table(name,state)"
+```
+
+All four rows must show `ENABLED`. If any are missing, re-run the enable command
+for that specific API. Enablement can take up to 60 seconds to propagate — if an
+ADK call fails immediately after enabling, wait a moment and retry.
+
+> **Seeing a `SERVICE_DISABLED` or `API not enabled` error at runtime?**
+> Run `bash scripts/env-inspect.sh` (or `env-inspect.ps1` on Windows) — the API
+> section will show exactly which APIs are missing and print the `gcloud services
+> enable` command to fix each one.
 
 ---
 
