@@ -178,9 +178,23 @@ ADK call fails immediately after enabling, wait a moment and retry.
 
 ## GATE 4 — Generate the API key and store it safely (secret)
 
-> **Recommended for production: use Vertex AI + ADC (Gate 1) and skip this gate
-> entirely.** A raw API key is a long-lived, hard-to-rotate credential — prefer
-> Secret Manager or ADC for anything beyond local experimentation.
+> **On a corporate / enterprise machine? Use Vertex AI + ADC and skip this gate.**
+> The API-key path routes traffic through Google's consumer tier, which your company's
+> DLP or endpoint security tools may flag (including uploads to Google Drive from
+> Antigravity CLI / Gemini CLI). The Vertex AI path routes through your company's
+> GCP project, where your organisation's data policies apply.
+>
+> Instead of this gate, set these in your project `.env` and you're done:
+> ```
+> GOOGLE_GENAI_USE_VERTEXAI=true
+> GOOGLE_CLOUD_PROJECT=YOUR_CORPORATE_PROJECT_ID
+> GOOGLE_CLOUD_LOCATION=us-central1
+> ```
+> ADK reads these automatically and routes all model calls through Vertex AI.
+
+> **Personal / non-corporate machine?** A raw API key is still a long-lived,
+> hard-to-rotate credential — prefer Secret Manager or ADC for anything beyond
+> local experimentation.
 
 This produces a secret. The operating agent MUST follow every rule in this
 section or STOP and alert the user.

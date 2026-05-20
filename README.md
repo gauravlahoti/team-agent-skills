@@ -7,6 +7,43 @@ Ready-to-use skills for your coding agent. Clone once, stay updated with `git pu
 
 ---
 
+## ⚠️ Corporate / enterprise machines — read this first
+
+Antigravity CLI and Gemini CLI **collect interaction data and may sync context to Google Drive by default**. On a corporate machine, your DLP or endpoint security tool will flag this.
+
+**Before running any skill on a corporate machine, do both of these:**
+
+**1. Disable telemetry in Antigravity / Gemini CLI settings**
+Open the CLI settings and turn off the "Enable telemetry" toggle. This stops interaction data and diagnostics from being sent to Google.
+
+**2. Use Vertex AI + ADC instead of an API key**
+The API-key path routes traffic through Google's consumer tier. The Vertex AI path routes through your company's GCP project, where your organisation's data policies apply.
+
+When the skill asks you to set up a Gemini API key (Gate 4), choose the Vertex AI option instead:
+```bash
+# Authenticate with your corporate GCP project
+gcloud auth application-default login
+gcloud config set project YOUR_CORPORATE_PROJECT_ID
+
+# Enable Vertex AI (skip the API key step entirely)
+gcloud services enable aiplatform.googleapis.com
+```
+
+Set this in your project's `.env`:
+```
+GOOGLE_GENAI_USE_VERTEXAI=true
+GOOGLE_CLOUD_PROJECT=YOUR_CORPORATE_PROJECT_ID
+GOOGLE_CLOUD_LOCATION=us-central1
+```
+
+ADK reads these automatically and will use Vertex AI instead of the Generative Language API.
+
+> If your corporate proxy blocks `antigravity.google` or `generativelanguage.googleapis.com`,
+> set `HTTP_PROXY` / `HTTPS_PROXY` before running any commands, or ask your IT team
+> to allowlist those domains.
+
+---
+
 ## Install
 
 ```bash
